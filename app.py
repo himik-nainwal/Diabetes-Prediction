@@ -2,7 +2,8 @@ from flask import Flask,request, url_for, redirect, render_template  ## importin
 import pickle  ## pickle for loading model(Diabetes.pkl)
 import pandas as pd
 import numpy as np## to convert the input data into a dataframe for giving as a input to the model
-
+from sklearn.preprocessing import StandardScaler
+std=StandardScaler()
 app = Flask(__name__, template_folder='templates')  # still relative to module
   ## setting up flask name
 
@@ -26,7 +27,9 @@ def predict():
         age = request.form['age']
         
         data = np.array([[preg, glucose,st,insulin, bmi,age]])
-        my_prediction = model.predict(data)
+        hims=data.reshape(1,-1)
+        std_data=std.fit_transform(hims)
+        my_prediction = model.predict(std_data)
          
         return render_template('result.html', prediction=my_prediction)
 
